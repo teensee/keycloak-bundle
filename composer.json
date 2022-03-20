@@ -1,0 +1,53 @@
+{
+    "name": "martyanov/keycloak-bundle",
+    "description": "Keycloak api bundle",
+    "type": "symfony-bundle",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.1",
+        "ext-ctype": "*",
+        "ext-iconv": "*",
+        "ramsey/uuid": "^4.2",
+        "symfony/console": "6.0.*",
+        "symfony/dotenv": "6.0.*",
+        "symfony/flex": "^v1.13",
+        "symfony/framework-bundle": "6.0.*",
+        "symfony/http-client": "6.0.*",
+        "symfony/mime": "6.0.*"
+    },
+    "require-dev": {
+        "symfony/phpunit-bridge": "^6.0",
+        "symfony/stopwatch": "6.0.*"
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "symfony/flex": true,
+            "symfony/runtime": true
+        },
+        "optimize-autoloader": true,
+        "preferred-install": {
+            "*": "dist"
+        },
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "KeycloakBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "KeycloakBundle\\Tests\\": "tests/"
+        }
+    },
+    "conflict": {
+        "symfony/symfony": "*"
+    },
+    "extra": {
+        "symfony": {
+            "allow-contrib": false,
+            "require": "6.0.*"
+        }
+    }
+}
