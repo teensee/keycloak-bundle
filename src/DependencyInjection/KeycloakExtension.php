@@ -30,6 +30,7 @@ class KeycloakExtension extends Extension
 
         $this->registerHttpClient($config['http_client'], $container);
         $this->instantiateKeycloakHttpClients($config['realms'], $container);
+        $this->instantiateManagers($container);
 
         $loader = new Loader\ProtectedPhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.php');
@@ -94,13 +95,6 @@ class KeycloakExtension extends Extension
             $adminPrefix = $configuration['admin'] === true ? '_admin' : '';
 
             $container->setDefinition("keycloak.http.repository.login{$adminPrefix}", $loginRepositoryDef);
-            if ($configuration['admin'] === false) {
-                $authorizationManagerDef = new Definition(AuthorizationManager::class, [
-                    new Reference('keycloak.http.repository.login')
-                ]);
-
-                $container->setDefinition('keycloak.manager.authorization_manager', $authorizationManagerDef);
-            }
         }
 
 //                $signUpRepositoryDef = new Definition(SignUpRepository::class, [
@@ -109,5 +103,10 @@ class KeycloakExtension extends Extension
 //                ]);
 //
 //                $container->setDefinition("keycloak.http.repository.signup{$adminPrefix}", $signUpRepositoryDef);
+    }
+
+    private function instantiateManagers(ContainerBuilder $container)
+    {
+
     }
 }

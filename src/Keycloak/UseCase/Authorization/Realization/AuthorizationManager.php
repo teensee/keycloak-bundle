@@ -13,7 +13,7 @@ class AuthorizationManager
 {
     public function __construct(
         private AuthorizationRepositoryInterface $repository,
-        private SignUpRepositoryInterface $signUpRepository
+        //private SignUpRepositoryInterface $signUpRepository
     ) {
     }
 
@@ -32,8 +32,9 @@ class AuthorizationManager
         return $this->repository->refresh($token);
     }
 
-    private function signUp()
+    public function signUp()
     {
         //$this->signUpRepository->signup();
+        return true;
     }
 }

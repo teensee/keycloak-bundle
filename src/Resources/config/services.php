@@ -3,6 +3,7 @@
 namespace KeycloakBundle;
 
 use KeycloakBundle\Keycloak\Logger\DefaultLogger;
+use KeycloakBundle\Keycloak\UseCase\Authorization\Realization\AuthorizationManager;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
@@ -13,15 +14,21 @@ return static function (ContainerConfigurator $container): void {
                           ->autowire()
                           ->autoconfigure();
 
+    if (defined('PHPUNIT_COMPOSER_INSTALL') || defined('__PHPUNIT_PHAR__')) {
+        $services->public();
+    }
+
     $services->load('KeycloakBundle\\', __DIR__.'/../../*')
              ->exclude([
                  '../../{DependencyInjection,Tests,Resources}',
                  '../../Keycloak/{Http,Enum,DTO,Exception,Configuration,Client,Logger}',
-             ])
-    ;
+             ]);
 
     $services->set(DefaultLogger::ID)
              ->class(DefaultLogger::class)
-             ->args(['$logger' => service('monolog.logger'), '$debug' => param('kernel.debug')])
+             ->args(['$logger' => service('logger')->nullOnInvalid(), '$debug' => param('kernel.debug')])
              ->tag('monolog.logger', ['channel' => 'keycloak']);
+
+    $services->set(AuthorizationManager::class)
+        ->args([service('keycloak.http.repository.login')]);
 };
