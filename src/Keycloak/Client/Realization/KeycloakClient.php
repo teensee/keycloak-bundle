@@ -31,17 +31,15 @@ final class KeycloakClient implements ClientInterface
 
             $content = $response->getContent();
         } catch (ClientExceptionInterface $e) {
+            dd($action, $e->getMessage());
             $statusCode = $e->getResponse()->getStatusCode();
             $content = json_decode($e->getResponse()->getContent(false), true);
             $this->logger?->error("{$action->getMethod()->value} {$action->getUri()} return status code: {$statusCode}", ['responseBody' => $content]);
-
-            dd();
         } catch (RedirectionExceptionInterface | ServerException | TransportExceptionInterface $e) {
             //todo: add 3xx/5xx handling
             $statusCode = $e->getResponse()->getStatusCode();
             $content = json_decode($e->getResponse()->getContent(false), true);
             $this->logger?->error("{$action->getMethod()->value} {$action->getUri()} return status code: {$statusCode}", ['responseBody' => $content]);
-            dd();
         }
 
         return $content;
