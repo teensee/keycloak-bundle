@@ -48,11 +48,9 @@ class ClientFunctionalTest extends TestCase
     {
         $container = $this->kernel->getContainer();
         $httpClient =  $container->get('keycloak.stub_http_client');
-
         self::assertInstanceOf(ClientInterface::class, $httpClient);
 
         $action = new StubAction();
-
         self::assertInstanceOf(ActionInterface::class, $action);
         self::assertEquals(Method::GET, $action->getMethod());
 

@@ -43,6 +43,13 @@ class AuthorizationManager
         return true;
     }
 
+    /**
+     * @todo move to another manager
+     *
+     * @param Uuid4 $id
+     *
+     * @return bool
+     */
     public function delete(Uuid4 $id)
     {
         $this->signUpRepository->delete($id);
@@ -50,7 +57,12 @@ class AuthorizationManager
         return true;
     }
 
-    public function getId(Email $email)
+    /**
+     * @param Email $email
+     *
+     * @return Uuid4
+     */
+    public function getId(Email $email): Uuid4
     {
         return $this->infoRepository->getIdByEmail($email);
     }

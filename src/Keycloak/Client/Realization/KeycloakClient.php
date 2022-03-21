@@ -4,15 +4,15 @@ namespace KeycloakBundle\Keycloak\Client\Realization;
 
 use KeycloakBundle\Keycloak\Client\Abstraction\ClientInterface;
 use KeycloakBundle\Keycloak\Http\Actions\Abstraction\ActionInterface;
+use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\Exception\ServerException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-final class KeycloakClient implements ClientInterface
+final class KeycloakClient implements ClientInterface, LoggerAwareInterface
 {
     private LoggerInterface $logger;
     public function __construct(private HttpClientInterface $keycloakClient)
@@ -31,7 +31,7 @@ final class KeycloakClient implements ClientInterface
 
             $content = $response->getContent();
         } catch (ClientExceptionInterface $e) {
-            dd($action, $e->getMessage());
+            //todo: add 4xx error Handling
             $statusCode = $e->getResponse()->getStatusCode();
             $content = json_decode($e->getResponse()->getContent(false), true);
             $this->logger?->error("{$action->getMethod()->value} {$action->getUri()} return status code: {$statusCode}", ['responseBody' => $content]);
@@ -45,7 +45,7 @@ final class KeycloakClient implements ClientInterface
         return $content;
     }
 
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }

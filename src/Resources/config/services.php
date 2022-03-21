@@ -4,6 +4,7 @@ namespace KeycloakBundle;
 
 use KeycloakBundle\Keycloak\Logger\DefaultLogger;
 use KeycloakBundle\Keycloak\UseCase\Authorization\Realization\AuthorizationManager;
+use KeycloakBundle\Keycloak\UseCase\UserManagement\Realization\UserManager;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
@@ -35,6 +36,13 @@ return static function (ContainerConfigurator $container): void {
     $services->set(AuthorizationManager::class)
              ->args([
                  service('keycloak.http.repository.login'),
+                 service('keycloak.http.repository.signup'),
+                 service('keycloak.http.repository.user_info')
+             ]);
+
+
+    $services->set(UserManager::class)
+             ->args([
                  service('keycloak.http.repository.signup'),
                  service('keycloak.http.repository.user_info')
              ]);

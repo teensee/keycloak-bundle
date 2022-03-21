@@ -4,23 +4,26 @@ namespace KeycloakBundle\Tests\api;
 
 use Faker\Factory;
 use Faker\Generator;
+use KeycloakBundle\Keycloak\Configuration\Abstraction\ConfigurationInterface;
 use KeycloakBundle\Keycloak\DTO\Common\Collections\Realization\Credentials;
 use KeycloakBundle\Keycloak\DTO\Common\Credential\Realization\Password;
 use KeycloakBundle\Keycloak\DTO\Common\Email;
 use KeycloakBundle\Keycloak\DTO\Common\Name;
 use KeycloakBundle\Keycloak\DTO\Common\Username;
 use KeycloakBundle\Keycloak\DTO\Common\Uuid4;
+use KeycloakBundle\Keycloak\DTO\User\Request\Authorization\Realization\ClientCredentials;
 use KeycloakBundle\Keycloak\DTO\User\Request\SignUp\Realization\UserRepresentation;
+use KeycloakBundle\Keycloak\DTO\User\Response\Authorization\SuccessAuthorization;
 use KeycloakBundle\Keycloak\UseCase\Authorization\Realization\AuthorizationManager;
 use KeycloakBundle\Tests\KeycloakTestingKernel;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-class AuthorizationTest extends WebTestCase
+class UserManagementTest extends WebTestCase
 {
-    private static $currentUser;
-    private static $faker;
+    private static UserRepresentation $currentUser;
+    private static Generator $faker;
 
     protected function setUp(): void
     {
@@ -58,6 +61,7 @@ class AuthorizationTest extends WebTestCase
     public static function setupCurrentUserDTO()
     {
         static::$faker = Factory::create();
+
         self::$currentUser = new UserRepresentation(
             Uuid4::fromString(self::$faker->uuid),
             new Username(self::$faker->userName),
@@ -85,7 +89,6 @@ class AuthorizationTest extends WebTestCase
         self::assertInstanceOf(AuthorizationManager::class, $authorizationManager);
 
         $id = $authorizationManager->getId(self::$currentUser->getEmail());
-
         self::assertNotNull($id);
     }
 
@@ -95,10 +98,27 @@ class AuthorizationTest extends WebTestCase
         $authorizationManager = $container->get(AuthorizationManager::class);
         self::assertInstanceOf(AuthorizationManager::class, $authorizationManager);
 
-        $raw = $authorizationManager->getId(self::$currentUser->getEmail());
+        $uuid = $authorizationManager->getId(self::$currentUser->getEmail());
 
-        $decoded = json_decode($raw, true);
-        $authorizationManager->delete(Uuid4::fromString($decoded[0]['id']));
+        $authorizationManager->delete($uuid);
     }
 
+    public function testLoginByClientCredentials()
+    {
+        $container = self::$kernel->getContainer();
+        $authorizationManager = $container->get(AuthorizationManager::class);
+        self::assertInstanceOf(AuthorizationManager::class, $authorizationManager);
+
+        $token = $authorizationManager->login(new ClientCredentials(
+           $_ENV['KEYCLOAK_ADMIN_CLIENT_ID'],
+           $_ENV['KEYCLOAK_ADMIN_CLIENT_SECRET']
+        ));
+
+        self::assertInstanceOf(SuccessAuthorization::class, $token);
+    }
+
+    public function testRegistrationVerification()
+    {
+
+    }
 }

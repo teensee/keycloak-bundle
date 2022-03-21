@@ -99,16 +99,16 @@ class KeycloakExtension extends Extension
 
             if ($container->has('keycloak.http.repository.login_admin') && true === $configuration['admin']) {
                 $signUpRepositoryDef = new Definition(SignUpRepository::class, [
-                    $container->getDefinition('keycloak.http.repository.login_admin'),
-                    $container->getDefinition('keycloak.http_client'),
+                    new Reference('keycloak.http.repository.login_admin'),
+                    new Reference('keycloak.http_client'),
                     $configuration['reference']
                 ]);
 
                 $container->setDefinition("keycloak.http.repository.signup", $signUpRepositoryDef);
 
                 $infoRepositoryDef = new Definition(UserInfoRepository::class, [
-                    $container->getDefinition('keycloak.http.repository.login_admin'),
-                    $container->getDefinition('keycloak.http_client'),
+                    new Reference('keycloak.http.repository.login_admin'),
+                    new Reference('keycloak.http_client'),
                     $configuration['reference']
                 ]);
 
