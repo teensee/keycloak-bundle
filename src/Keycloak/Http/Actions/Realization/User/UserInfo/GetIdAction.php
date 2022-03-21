@@ -1,22 +1,23 @@
 <?php
 
-namespace KeycloakBundle\Keycloak\Http\Actions\Realization\User\Registration;
+namespace KeycloakBundle\Keycloak\Http\Actions\Realization\User\UserInfo;
 
 use KeycloakBundle\Keycloak\Configuration\Abstraction\ConfigurationInterface;
+use KeycloakBundle\Keycloak\DTO\Common\Email;
 use KeycloakBundle\Keycloak\DTO\Token\Realization\AccessToken;
-use KeycloakBundle\Keycloak\DTO\User\Request\SignUp\Realization\UserRepresentation;
 use KeycloakBundle\Keycloak\Enum\Method;
 use KeycloakBundle\Keycloak\Http\Actions\Abstraction\Action;
 
-final class SignUpAction extends Action
+class GetIdAction extends Action
 {
     const ADDRESS_PATTERN = 'admin/realms/[REALM]/users';
 
     public function __construct(
-        private UserRepresentation $user,
+        private Email $email,
         private AccessToken $adminToken,
         private ConfigurationInterface $configuration
     ) {
+
     }
 
     public function getUri(): string
@@ -26,17 +27,19 @@ final class SignUpAction extends Action
 
     public function getMethod(): Method
     {
-        return Method::POST;
+        return Method::GET;
     }
 
     public function getOptions(): array
     {
         return [
             'headers' => [
-                "Authorization" => "Bearer {$this->adminToken->getToken()}",
+                'Authorization' => "Bearer {$this->adminToken->getToken()}",
                 'Content-Type' => 'application/json',
             ],
-            'json' => $this->user,
+            'query' => [
+                'email' => $this->email->getValue(),
+            ],
         ];
     }
 }

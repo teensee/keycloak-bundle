@@ -36,5 +36,6 @@ return static function (ContainerConfigurator $container): void {
              ->args([
                  service('keycloak.http.repository.login'),
                  service('keycloak.http.repository.signup'),
+                 service('keycloak.http.repository.user_info')
              ]);
 };

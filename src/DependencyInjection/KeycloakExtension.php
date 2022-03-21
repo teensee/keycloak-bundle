@@ -6,7 +6,8 @@ use Exception;
 use KeycloakBundle\Keycloak\Client\Realization\KeycloakClient;
 use KeycloakBundle\Keycloak\Configuration\Realization\Configuration as KeycloakConfiguration;
 use KeycloakBundle\Keycloak\Http\Repository\Realization\User\Authorization\AuthorizationRepository;
-use KeycloakBundle\Keycloak\Http\Repository\Realization\User\Registration\SignUpRepository;
+use KeycloakBundle\Keycloak\Http\Repository\Realization\User\UserInfo\UserInfoRepository;
+use KeycloakBundle\Keycloak\Http\Repository\Realization\User\UserManagement\SignUpRepository;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -104,6 +105,14 @@ class KeycloakExtension extends Extension
                 ]);
 
                 $container->setDefinition("keycloak.http.repository.signup", $signUpRepositoryDef);
+
+                $infoRepositoryDef = new Definition(UserInfoRepository::class, [
+                    $container->getDefinition('keycloak.http.repository.login_admin'),
+                    $container->getDefinition('keycloak.http_client'),
+                    $configuration['reference']
+                ]);
+
+                $container->setDefinition('keycloak.http.repository.user_info', $infoRepositoryDef);
             }
         }
     }

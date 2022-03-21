@@ -38,8 +38,6 @@ final class KeycloakClient implements ClientInterface
             dd();
         } catch (RedirectionExceptionInterface | ServerException | TransportExceptionInterface $e) {
             //todo: add 3xx/5xx handling
-            if($e instanceof  ServerException){
-            }
             $statusCode = $e->getResponse()->getStatusCode();
             $content = json_decode($e->getResponse()->getContent(false), true);
             $this->logger?->error("{$action->getMethod()->value} {$action->getUri()} return status code: {$statusCode}", ['responseBody' => $content]);

@@ -16,6 +16,7 @@
         "symfony/mime": "6.0.*"
     },
     "require-dev": {
+        "fzaninotto/faker": "^1.5",
         "symfony/phpunit-bridge": "^6.0",
         "symfony/stopwatch": "6.0.*"
     },

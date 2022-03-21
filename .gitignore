@@ -17,3 +17,4 @@ composer.lock
 ###< symfony/phpunit-bridge ###
 
 /tests/cache
+.env.test

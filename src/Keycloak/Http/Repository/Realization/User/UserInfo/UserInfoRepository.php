@@ -1,18 +1,17 @@
 <?php
 
-namespace KeycloakBundle\Keycloak\Http\Repository\Realization\User\Registration;
+namespace KeycloakBundle\Keycloak\Http\Repository\Realization\User\UserInfo;
 
 use KeycloakBundle\Keycloak\Client\Abstraction\ClientInterface;
 use KeycloakBundle\Keycloak\Configuration\Abstraction\ConfigurationInterface;
+use KeycloakBundle\Keycloak\DTO\Common\Email;
 use KeycloakBundle\Keycloak\DTO\Token\Realization\AccessToken;
 use KeycloakBundle\Keycloak\DTO\User\Request\Authorization\Realization\ClientCredentials;
-use KeycloakBundle\Keycloak\DTO\User\Request\SignUp\Realization\UserRepresentation;
-use KeycloakBundle\Keycloak\Http\Actions\Realization\User\Registration\SignUpAction;
+use KeycloakBundle\Keycloak\Http\Actions\Realization\User\UserInfo\GetIdAction;
 use KeycloakBundle\Keycloak\Http\Repository\Abstraction\Base\ApiRepository;
 use KeycloakBundle\Keycloak\Http\Repository\Abstraction\User\Authorization\AuthorizationRepositoryInterface;
-use KeycloakBundle\Keycloak\Http\Repository\Abstraction\User\Registration\SignUpRepositoryInterface;
 
-class SignUpRepository extends ApiRepository implements SignUpRepositoryInterface
+class UserInfoRepository extends ApiRepository
 {
     public function __construct(
         private AuthorizationRepositoryInterface $loginRepository,
@@ -22,21 +21,16 @@ class SignUpRepository extends ApiRepository implements SignUpRepositoryInterfac
         parent::__construct($this->client, $this->configuration);
     }
 
-    public function signup(UserRepresentation $user)
+    public function getIdByEmail(Email $email)
     {
-        $adminCredentials = new ClientCredentials($this->configuration->getClientId(), $this->configuration->getClientSecret());
+        $adminCredentials = new ClientCredentials(
+            $this->configuration->getClientId(),
+            $this->configuration->getClientSecret()
+        );
         $rawToken         = $this->loginRepository->login($adminCredentials);
         $access           = new AccessToken($rawToken->getAccess(), $rawToken->getExpiresIn());
-        $action           = new SignUpAction($user, $access, $this->configuration);
+        $action           = new GetIdAction($email, $access, $this->configuration);
 
-        $response = $this->client->execute($action);
-        dd($response);
-        $decoded  = json_decode($response, true);
-
-        if (json_last_error()) {
-            throw new \Exception('123');
-        }
-
-        return '';
+        return $this->client->execute($action);
     }
 }

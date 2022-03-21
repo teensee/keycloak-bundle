@@ -15,6 +15,6 @@ final class DefaultLogger extends AbstractLogger
 
     public function log($level, $message, array $context = []): void
     {
-        $this->logger->log(level: $level, message: $message, context: $context);
+        $this->logger?->log(level: $level, message: $message, context: $context);
     }
 }
