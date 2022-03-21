@@ -2,13 +2,15 @@
 
 namespace KeycloakBundle\Keycloak\DTO\User\Response\Authorization;
 
+use KeycloakBundle\Keycloak\DTO\Token\Realization\AccessToken;
+use KeycloakBundle\Keycloak\DTO\Token\Realization\RefreshToken;
+use KeycloakBundle\Keycloak\DTO\Token\Realization\TokenPair;
+use KeycloakBundle\Keycloak\Exception\DTO\User\DTOException;
+
 final class SuccessAuthorization
 {
     public function __construct(
-        private string $access,
-        private int $expiresIn,
-        private ?string $refresh,
-        private int $refreshExpiresIn,
+        private TokenPair $pair,
         private string $tokenType,
         private string $notBeforePolicy,
         private ?string $sessionState,
@@ -17,17 +19,27 @@ final class SuccessAuthorization
 
     }
 
+    /**
+     * @throws DTOException
+     */
     public static function fromArray(array $raw): SuccessAuthorization
     {
         if (!isset($raw['access_token']) || !isset($raw['expires_in']) || !isset($raw['scope'])) {
-            throw new \Exception();
+            throw DTOException::incorrectJsonPassed(
+                SuccessAuthorization::class,
+                __METHOD__,
+                ['access_token', 'expires_in', 'scope']
+            );
         }
 
+        $accessToken = new AccessToken($raw['access_token'], $raw['expires_in']);
+        $refreshToken = isset($raw['refresh_token'])
+            ? new RefreshToken($raw['refresh_token'], $raw['refresh_expires_in'])
+            : null;
+
+
         return new SuccessAuthorization(
-            $raw['access_token'],
-            $raw['expires_in'],
-            $raw['refresh_token'] ?? null,
-            $raw['refresh_expires_in'],
+            new TokenPair($accessToken, $refreshToken),
             $raw['token_type'],
             $raw['not-before-policy'],
             $raw['session_state'] ?? null,
@@ -36,35 +48,11 @@ final class SuccessAuthorization
     }
 
     /**
-     * @return string
+     * @return TokenPair
      */
-    public function getAccess(): string
+    public function getPair(): TokenPair
     {
-        return $this->access;
-    }
-
-    /**
-     * @return int
-     */
-    public function getExpiresIn(): int
-    {
-        return $this->expiresIn;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getRefresh(): ?string
-    {
-        return $this->refresh;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getRefreshExpiresIn(): ?int
-    {
-        return $this->refreshExpiresIn;
+        return $this->pair;
     }
 
     /**

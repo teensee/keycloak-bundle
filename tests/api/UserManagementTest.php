@@ -18,6 +18,8 @@ use KeycloakBundle\Keycloak\UseCase\Authorization\Realization\AuthorizationManag
 use KeycloakBundle\Keycloak\UseCase\UserManagement\Realization\UserManager;
 use KeycloakBundle\Tests\KeycloakTestingKernel;
 use PHPUnit\Framework\TestCase;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
 
@@ -119,5 +121,20 @@ final class UserManagementTest extends WebTestCase
         ));
 
         self::assertInstanceOf(SuccessAuthorization::class, $token);
+    }
+
+    protected function tearDown(): void
+    {
+        $dir = self::$kernel->getCacheDir();
+        $it = new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS);
+        $files = new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST);
+        foreach($files as $file) {
+            if ($file->isDir()){
+                rmdir($file->getRealPath());
+            } else {
+                unlink($file->getRealPath());
+            }
+        }
+        rmdir($dir);
     }
 }

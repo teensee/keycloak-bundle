@@ -55,7 +55,7 @@ class ClientFunctionalTest extends TestCase
         self::assertEquals(Method::GET, $action->getMethod());
 
         $result = $httpClient->execute($action);
-        self::assertJson($result);
-        self::assertJsonStringEqualsJsonString($result, '{"result": "ok"}');
+        self::assertJson($result->getContent());
+        self::assertJsonStringEqualsJsonString('{"result": "ok"}', $result->getContent());
     }
 }

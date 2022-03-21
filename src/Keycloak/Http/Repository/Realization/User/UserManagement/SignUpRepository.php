@@ -5,8 +5,6 @@ namespace KeycloakBundle\Keycloak\Http\Repository\Realization\User\UserManagemen
 use KeycloakBundle\Keycloak\Client\Abstraction\ClientInterface;
 use KeycloakBundle\Keycloak\Configuration\Abstraction\ConfigurationInterface;
 use KeycloakBundle\Keycloak\DTO\Common\Uuid4;
-use KeycloakBundle\Keycloak\DTO\Token\Realization\AccessToken;
-use KeycloakBundle\Keycloak\DTO\User\Request\Authorization\Realization\ClientCredentials;
 use KeycloakBundle\Keycloak\DTO\User\Request\SignUp\Realization\UserRepresentation;
 use KeycloakBundle\Keycloak\Http\Actions\Realization\User\UserManagement\DeleteAction;
 use KeycloakBundle\Keycloak\Http\Actions\Realization\User\UserManagement\SignUpAction;
@@ -24,23 +22,23 @@ class SignUpRepository extends ApiRepository implements SignUpRepositoryInterfac
         parent::__construct($this->client, $this->configuration);
     }
 
-    public function signup(UserRepresentation $user): string
+    public function signup(UserRepresentation $user): bool
     {
-        $adminCredentials = new ClientCredentials($this->configuration->getClientId(), $this->configuration->getClientSecret());
-        $rawToken         = $this->loginRepository->login($adminCredentials);
-        $access           = new AccessToken($rawToken->getAccess(), $rawToken->getExpiresIn());
-        $action           = new SignUpAction($user, $access, $this->configuration);
+        $adminCredentials = $this->getClientCredentials();
+        $token            = $this->loginRepository->login($adminCredentials);
+        $action           = new SignUpAction($user, $token->getPair()->getAccess(), $this->configuration);
+        $response         = $this->client->execute($action);
 
-        return $this->client->execute($action);
+        return $response->getStatusCode() === 201;
     }
 
     public function delete(Uuid4 $id): string
     {
-        $adminCredentials = new ClientCredentials($this->configuration->getClientId(), $this->configuration->getClientSecret());
-        $rawToken         = $this->loginRepository->login($adminCredentials);
-        $access           = new AccessToken($rawToken->getAccess(), $rawToken->getExpiresIn());
-        $action           = new DeleteAction($id, $access, $this->configuration);
+        $adminCredentials = $this->getClientCredentials();
+        $token            = $this->loginRepository->login($adminCredentials);
+        $action           = new DeleteAction($id, $token->getPair()->getAccess(), $this->configuration);
+        $response         = $this->client->execute($action);
 
-        return $this->client->execute($action);
+        return true;
     }
 }

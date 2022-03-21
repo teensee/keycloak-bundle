@@ -2,6 +2,7 @@
 
 namespace KeycloakBundle\Keycloak\Client\Abstraction;
 
+use KeycloakBundle\Keycloak\DTO\Common\Response\Realization\Response;
 use KeycloakBundle\Keycloak\Http\Actions\Abstraction\ActionInterface;
 
 interface ClientInterface
@@ -9,7 +10,7 @@ interface ClientInterface
     /**
      * @param ActionInterface $action
      *
-     * @return string
+     * @return Response
      */
-    public function execute(ActionInterface $action): string;
+    public function execute(ActionInterface $action): Response;
 }

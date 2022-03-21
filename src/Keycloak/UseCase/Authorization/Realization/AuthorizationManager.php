@@ -8,7 +8,7 @@ use KeycloakBundle\Keycloak\DTO\User\Request\Authorization\Realization\TokenPair
 use KeycloakBundle\Keycloak\DTO\User\Response\Authorization\SuccessAuthorization;
 use KeycloakBundle\Keycloak\Http\Repository\Abstraction\User\Authorization\AuthorizationRepositoryInterface;
 
-class AuthorizationManager
+final class AuthorizationManager
 {
     public function __construct(private AuthorizationRepositoryInterface $repository)
     {

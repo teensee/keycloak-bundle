@@ -6,7 +6,7 @@ use KeycloakBundle\Keycloak\DTO\Common\Email;
 use KeycloakBundle\Keycloak\DTO\Common\Name;
 use KeycloakBundle\Keycloak\DTO\Common\Username;
 use KeycloakBundle\Keycloak\DTO\Common\Uuid4;
-use KeycloakBundle\Keycloak\Exception\DTO\User\UserDTOException;
+use KeycloakBundle\Keycloak\Exception\DTO\User\DTOException;
 
 final class UserInfo implements \JsonSerializable
 {
@@ -20,12 +20,12 @@ final class UserInfo implements \JsonSerializable
     }
 
     /**
-     * @throws UserDTOException
+     * @throws DTOException
      */
     public static function fromResponse(array $response): UserInfo
     {
         if (!isset($response['id'], $response['username'])) {
-            throw UserDTOException::incorrectJsonPassed(self::class, __METHOD__, []);
+            throw DTOException::incorrectJsonPassed(self::class, __METHOD__, []);
         }
 
         return new UserInfo(

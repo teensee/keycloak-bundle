@@ -9,7 +9,7 @@ use KeycloakBundle\Keycloak\DTO\User\Response\UserManagement\UserInfo;
 use KeycloakBundle\Keycloak\Http\Repository\Abstraction\User\Registration\SignUpRepositoryInterface;
 use KeycloakBundle\Keycloak\Http\Repository\Realization\User\UserInfo\UserInfoRepository;
 
-class UserManager
+final class UserManager
 {
     public function __construct(
         private SignUpRepositoryInterface $signUpRepository,
@@ -18,9 +18,9 @@ class UserManager
 
     }
 
-    public function addUser(UserRepresentation $user)
+    public function addUser(UserRepresentation $user): bool
     {
-        $this->signUpRepository->signup($user);
+        return $this->signUpRepository->signup($user);
     }
 
     public function deleteUser(Uuid4 $id)

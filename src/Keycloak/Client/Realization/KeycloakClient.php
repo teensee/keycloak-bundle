@@ -3,12 +3,13 @@
 namespace KeycloakBundle\Keycloak\Client\Realization;
 
 use KeycloakBundle\Keycloak\Client\Abstraction\ClientInterface;
+use KeycloakBundle\Keycloak\DTO\Common\Response\Realization\Response;
 use KeycloakBundle\Keycloak\Http\Actions\Abstraction\ActionInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpClient\Exception\ServerException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -19,7 +20,7 @@ final class KeycloakClient implements ClientInterface, LoggerAwareInterface
     {
     }
 
-    public function execute(ActionInterface $action): string
+    public function execute(ActionInterface $action): Response
     {
         $this->log($action);
         try {
@@ -29,20 +30,22 @@ final class KeycloakClient implements ClientInterface, LoggerAwareInterface
                 $action->getOptions()
             );
 
-            $content = $response->getContent();
+            $content    = $response->getContent();
+            $headers    = $response->getHeaders();
+            $statusCode = $response->getStatusCode();
         } catch (ClientExceptionInterface $e) {
             //todo: add 4xx error Handling
             $statusCode = $e->getResponse()->getStatusCode();
             $content = json_decode($e->getResponse()->getContent(false), true);
             $this->logger?->error("{$action->getMethod()->value} {$action->getUri()} return status code: {$statusCode}", ['responseBody' => $content]);
-        } catch (RedirectionExceptionInterface | ServerException | TransportExceptionInterface $e) {
+        } catch (RedirectionExceptionInterface | ServerExceptionInterface | TransportExceptionInterface $e) {
             //todo: add 3xx/5xx handling
             $statusCode = $e->getResponse()->getStatusCode();
             $content = json_decode($e->getResponse()->getContent(false), true);
             $this->logger?->error("{$action->getMethod()->value} {$action->getUri()} return status code: {$statusCode}", ['responseBody' => $content]);
         }
 
-        return $content;
+        return new Response($content, $statusCode, $headers);
     }
 
     public function setLogger(LoggerInterface $logger): void

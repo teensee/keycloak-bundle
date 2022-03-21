@@ -7,7 +7,7 @@ use KeycloakBundle\Keycloak\DTO\User\Request\SignUp\Realization\UserRepresentati
 
 interface SignUpRepositoryInterface
 {
-    public function signup(UserRepresentation $user);
+    public function signup(UserRepresentation $user): bool;
 
     public function delete(Uuid4 $id): string;
 }
