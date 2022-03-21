@@ -15,6 +15,7 @@ use KeycloakBundle\Keycloak\DTO\User\Request\Authorization\Realization\ClientCre
 use KeycloakBundle\Keycloak\DTO\User\Request\SignUp\Realization\UserRepresentation;
 use KeycloakBundle\Keycloak\DTO\User\Response\Authorization\SuccessAuthorization;
 use KeycloakBundle\Keycloak\UseCase\Authorization\Realization\AuthorizationManager;
+use KeycloakBundle\Keycloak\UseCase\UserManagement\Realization\UserManager;
 use KeycloakBundle\Tests\KeycloakTestingKernel;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -75,18 +76,18 @@ final class UserManagementTest extends WebTestCase
     public function testSignUp()
     {
         $container = self::$kernel->getContainer();
-        $authorizationManager = $container->get(AuthorizationManager::class);
-        self::assertInstanceOf(AuthorizationManager::class, $authorizationManager);
+        $authorizationManager = $container->get(UserManager::class);
+        self::assertInstanceOf(UserManager::class, $authorizationManager);
 
-        $result = $authorizationManager->signUp(self::$currentUser);
+        $result = $authorizationManager->addUser(self::$currentUser);
         self::assertTrue($result);
     }
 
     public function testGetUserId()
     {
         $container = self::$kernel->getContainer();
-        $authorizationManager = $container->get(AuthorizationManager::class);
-        self::assertInstanceOf(AuthorizationManager::class, $authorizationManager);
+        $authorizationManager = $container->get(UserManager::class);
+        self::assertInstanceOf(UserManager::class, $authorizationManager);
 
         $id = $authorizationManager->getId(self::$currentUser->getEmail());
         self::assertNotNull($id);
@@ -95,12 +96,12 @@ final class UserManagementTest extends WebTestCase
     public function testGetIdAndDelete()
     {
         $container = self::$kernel->getContainer();
-        $authorizationManager = $container->get(AuthorizationManager::class);
-        self::assertInstanceOf(AuthorizationManager::class, $authorizationManager);
+        $authorizationManager = $container->get(UserManager::class);
+        self::assertInstanceOf(UserManager::class, $authorizationManager);
 
         $uuid = $authorizationManager->getId(self::$currentUser->getEmail());
 
-        $authorizationManager->delete($uuid);
+        $authorizationManager->deleteUser($uuid);
     }
 
     /**
@@ -118,10 +119,5 @@ final class UserManagementTest extends WebTestCase
         ));
 
         self::assertInstanceOf(SuccessAuthorization::class, $token);
-    }
-
-    public function tEestRegistrationVerification()
-    {
-
     }
 }

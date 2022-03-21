@@ -11,7 +11,7 @@ use KeycloakBundle\Keycloak\Http\Repository\Realization\User\Authorization\Autho
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\HttpClient;
 
-class SecondTest extends TestCase
+class InstanceOfTest extends TestCase
 {
     public function testKeycloakHttpClient()
     {

@@ -48,7 +48,7 @@ class KeycloakExtension extends Extension
                   ->setArguments([$httpClient['base_uri'], [], 6, 50]);
 
         $clientDefinition = new Definition(KeycloakClient::class, [
-            $container->getDefinition('http_client.keycloak_client'),
+            new Reference('http_client.keycloak_client'),
         ]);
 
         $logger = $httpClient['logger'];
