@@ -3,17 +3,21 @@
 namespace KeycloakBundle\Keycloak\DTO\Common;
 
 use JsonSerializable;
+use KeycloakBundle\Keycloak\Exception\DTO\User\ModelException;
 use Stringable;
 
 class Email implements JsonSerializable, Stringable
 {
     private string $value;
 
+    /**
+     * @throws ModelException
+     */
     public function __construct(string $email)
     {
         $result = filter_var($email, FILTER_VALIDATE_EMAIL);
         if (false === $result) {
-            dd('incorrect email exception');
+            throw ModelException::invalidEmail($email);
         }
 
         $this->value = $email;

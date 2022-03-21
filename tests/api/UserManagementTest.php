@@ -20,7 +20,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-class UserManagementTest extends WebTestCase
+final class UserManagementTest extends WebTestCase
 {
     private static UserRepresentation $currentUser;
     private static Generator $faker;
@@ -60,7 +60,7 @@ class UserManagementTest extends WebTestCase
      */
     public static function setupCurrentUserDTO()
     {
-        static::$faker = Factory::create();
+        UserManagementTest::$faker = Factory::create();
 
         self::$currentUser = new UserRepresentation(
             Uuid4::fromString(self::$faker->uuid),
@@ -103,6 +103,9 @@ class UserManagementTest extends WebTestCase
         $authorizationManager->delete($uuid);
     }
 
+    /**
+     * @covers AuthorizationManager::login()
+     */
     public function testLoginByClientCredentials()
     {
         $container = self::$kernel->getContainer();
@@ -117,7 +120,7 @@ class UserManagementTest extends WebTestCase
         self::assertInstanceOf(SuccessAuthorization::class, $token);
     }
 
-    public function testRegistrationVerification()
+    public function tEestRegistrationVerification()
     {
 
     }

@@ -3,6 +3,7 @@
 namespace KeycloakBundle\Keycloak\DTO\Common;
 
 use JsonSerializable;
+use KeycloakBundle\Keycloak\Exception\DTO\User\ModelException;
 use Ramsey\Uuid\Uuid;
 use Stringable;
 
@@ -13,7 +14,7 @@ final class Uuid4 implements JsonSerializable, Stringable
     private function __construct(string $id)
     {
         if (!Uuid::isValid($id)) {
-            dd('incorrect uuid exception');
+            throw ModelException::invalidUuid($id);
         }
 
         $this->value = $id;
