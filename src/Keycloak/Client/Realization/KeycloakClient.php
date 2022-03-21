@@ -5,6 +5,7 @@ namespace KeycloakBundle\Keycloak\Client\Realization;
 use KeycloakBundle\Keycloak\Client\Abstraction\ClientInterface;
 use KeycloakBundle\Keycloak\Http\Actions\Abstraction\ActionInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpClient\Exception\ServerException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -35,12 +36,13 @@ final class KeycloakClient implements ClientInterface
             $this->logger?->error("{$action->getMethod()->value} {$action->getUri()} return status code: {$statusCode}", ['responseBody' => $content]);
 
             dd();
-        } catch (RedirectionExceptionInterface | ServerExceptionInterface | TransportExceptionInterface $e) {
+        } catch (RedirectionExceptionInterface | ServerException | TransportExceptionInterface $e) {
             //todo: add 3xx/5xx handling
+            if($e instanceof  ServerException){
+            }
             $statusCode = $e->getResponse()->getStatusCode();
             $content = json_decode($e->getResponse()->getContent(false), true);
             $this->logger?->error("{$action->getMethod()->value} {$action->getUri()} return status code: {$statusCode}", ['responseBody' => $content]);
-
             dd();
         }
 

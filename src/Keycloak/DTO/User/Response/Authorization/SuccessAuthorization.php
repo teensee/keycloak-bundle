@@ -8,10 +8,10 @@ final class SuccessAuthorization
         private string $access,
         private int $expiresIn,
         private ?string $refresh,
-        private ?int $refreshExpiresIn,
+        private int $refreshExpiresIn,
         private string $tokenType,
         private string $notBeforePolicy,
-        private string $sessionState,
+        private ?string $sessionState,
         private string $scope
     ) {
 
@@ -26,11 +26,11 @@ final class SuccessAuthorization
         return new SuccessAuthorization(
             $raw['access_token'],
             $raw['expires_in'],
-            $raw['refresh_token'],
+            $raw['refresh_token'] ?? null,
             $raw['refresh_expires_in'],
             $raw['token_type'],
             $raw['not-before-policy'],
-            $raw['session_state'],
+            $raw['session_state'] ?? null,
             $raw['scope']
         );
     }

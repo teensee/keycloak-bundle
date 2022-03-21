@@ -26,9 +26,15 @@ return static function (ContainerConfigurator $container): void {
 
     $services->set(DefaultLogger::ID)
              ->class(DefaultLogger::class)
-             ->args(['$logger' => service('logger')->nullOnInvalid(), '$debug' => param('kernel.debug')])
+             ->args([
+                 service('logger')->nullOnInvalid(),
+                 param('kernel.debug')
+             ])
              ->tag('monolog.logger', ['channel' => 'keycloak']);
 
     $services->set(AuthorizationManager::class)
-        ->args([service('keycloak.http.repository.login')]);
+             ->args([
+                 service('keycloak.http.repository.login'),
+                 service('keycloak.http.repository.signup'),
+             ]);
 };

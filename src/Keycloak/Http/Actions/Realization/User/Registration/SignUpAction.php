@@ -10,7 +10,7 @@ use KeycloakBundle\Keycloak\Http\Actions\Abstraction\Action;
 
 final class SignUpAction extends Action
 {
-    const ADDRESS_PATTERN = '/admin/realms/[REALM]/users';
+    const ADDRESS_PATTERN = 'admin/realms/[REALM]/users';
 
     public function __construct(
         private UserRepresentation $user,
@@ -36,12 +36,7 @@ final class SignUpAction extends Action
                 "Authorization" => "Bearer {$this->adminToken->getToken()}",
                 'Content-Type' => 'application/json',
             ],
-            'json' => $this->getJson(),
+            'json' => $this->user,
         ];
-    }
-
-    private function getJson(): string
-    {
-        return json_encode($this->user);
     }
 }

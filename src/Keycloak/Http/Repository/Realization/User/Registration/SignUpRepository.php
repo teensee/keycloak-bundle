@@ -16,20 +16,21 @@ class SignUpRepository extends ApiRepository implements SignUpRepositoryInterfac
 {
     public function __construct(
         private AuthorizationRepositoryInterface $loginRepository,
-        protected readonly ClientInterface $client,
-        protected readonly ConfigurationInterface $configuration
+        protected ClientInterface $client,
+        protected ConfigurationInterface $configuration
     ) {
         parent::__construct($this->client, $this->configuration);
     }
 
     public function signup(UserRepresentation $user)
     {
-        $adminCredentials = new ClientCredentials('admin-cli', 'aef29b91-5f5e-414a-85ca-1d43b71e143f');
+        $adminCredentials = new ClientCredentials($this->configuration->getClientId(), $this->configuration->getClientSecret());
         $rawToken         = $this->loginRepository->login($adminCredentials);
         $access           = new AccessToken($rawToken->getAccess(), $rawToken->getExpiresIn());
         $action           = new SignUpAction($user, $access, $this->configuration);
 
         $response = $this->client->execute($action);
+        dd($response);
         $decoded  = json_decode($response, true);
 
         if (json_last_error()) {

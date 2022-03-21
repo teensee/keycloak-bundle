@@ -132,12 +132,12 @@ abstract class Collection implements CollectionInterface
         return $this->containsKey($offset);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset)
     {
         return $this->get($offset);
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value)
     {
         if (!isset($offset)) {
             $this->add($value);

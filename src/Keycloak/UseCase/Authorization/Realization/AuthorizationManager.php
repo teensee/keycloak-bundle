@@ -5,6 +5,7 @@ namespace KeycloakBundle\Keycloak\UseCase\Authorization\Realization;
 use KeycloakBundle\Keycloak\DTO\Token\Realization\RefreshToken;
 use KeycloakBundle\Keycloak\DTO\User\Request\Authorization\Abstraction\UserCredentials;
 use KeycloakBundle\Keycloak\DTO\User\Request\Authorization\Realization\TokenPairCredentials;
+use KeycloakBundle\Keycloak\DTO\User\Request\SignUp\Realization\UserRepresentation;
 use KeycloakBundle\Keycloak\DTO\User\Response\Authorization\SuccessAuthorization;
 use KeycloakBundle\Keycloak\Http\Repository\Abstraction\User\Authorization\AuthorizationRepositoryInterface;
 use KeycloakBundle\Keycloak\Http\Repository\Abstraction\User\Registration\SignUpRepositoryInterface;
@@ -13,7 +14,7 @@ class AuthorizationManager
 {
     public function __construct(
         private AuthorizationRepositoryInterface $repository,
-        //private SignUpRepositoryInterface $signUpRepository
+        private SignUpRepositoryInterface $signUpRepository
     ) {
     }
 
@@ -32,9 +33,9 @@ class AuthorizationManager
         return $this->repository->refresh($token);
     }
 
-    public function signUp()
+    public function signUp(UserRepresentation $user)
     {
-        //$this->signUpRepository->signup();
+        $this->signUpRepository->signup($user);
         return true;
     }
 }

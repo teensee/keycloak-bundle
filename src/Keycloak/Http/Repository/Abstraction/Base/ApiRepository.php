@@ -8,8 +8,8 @@ use KeycloakBundle\Keycloak\Configuration\Abstraction\ConfigurationInterface;
 abstract class ApiRepository implements ApiRepositoryInterface
 {
     public function __construct(
-        protected readonly ClientInterface $client,
-        protected readonly ConfigurationInterface $configuration
+        protected ClientInterface $client,
+        protected ConfigurationInterface $configuration
     ) {
     }
 }

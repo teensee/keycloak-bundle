@@ -6,7 +6,7 @@ use Exception;
 use KeycloakBundle\Keycloak\Client\Realization\KeycloakClient;
 use KeycloakBundle\Keycloak\Configuration\Realization\Configuration as KeycloakConfiguration;
 use KeycloakBundle\Keycloak\Http\Repository\Realization\User\Authorization\AuthorizationRepository;
-use KeycloakBundle\Keycloak\UseCase\Authorization\Realization\AuthorizationManager;
+use KeycloakBundle\Keycloak\Http\Repository\Realization\User\Registration\SignUpRepository;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -95,14 +95,17 @@ class KeycloakExtension extends Extension
             $adminPrefix = $configuration['admin'] === true ? '_admin' : '';
 
             $container->setDefinition("keycloak.http.repository.login{$adminPrefix}", $loginRepositoryDef);
-        }
 
-//                $signUpRepositoryDef = new Definition(SignUpRepository::class, [
-//                    $container->getDefinition('keycloak.http_client'),
-//                    $container->getDefinition($registeredClientName)
-//                ]);
-//
-//                $container->setDefinition("keycloak.http.repository.signup{$adminPrefix}", $signUpRepositoryDef);
+            if ($container->has('keycloak.http.repository.login_admin') && true === $configuration['admin']) {
+                $signUpRepositoryDef = new Definition(SignUpRepository::class, [
+                    $container->getDefinition('keycloak.http.repository.login_admin'),
+                    $container->getDefinition('keycloak.http_client'),
+                    $configuration['reference']
+                ]);
+
+                $container->setDefinition("keycloak.http.repository.signup", $signUpRepositoryDef);
+            }
+        }
     }
 
     private function instantiateManagers(ContainerBuilder $container)
