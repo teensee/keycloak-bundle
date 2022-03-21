@@ -19,8 +19,8 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class AuthorizationTest extends WebTestCase
 {
-    private UserRepresentation $currentUser;
-    private Generator $faker;
+    private static $currentUser;
+    private static $faker;
 
     protected function setUp(): void
     {
@@ -50,21 +50,21 @@ class AuthorizationTest extends WebTestCase
         ]);
 
         self::$kernel->boot();
-        $this->faker = Factory::create();
     }
 
     /**
      * @beforeClass
      */
-    public function setupCurrentUserDTO()
+    public static function setupCurrentUserDTO()
     {
-        $this->currentUser = new UserRepresentation(
-            Uuid4::fromString($this->faker->uuid),
-            new Username($this->faker->userName),
-            new Email($this->faker->email),
-            new Credentials([new Password($this->faker->password, false)]),
+        static::$faker = Factory::create();
+        self::$currentUser = new UserRepresentation(
+            Uuid4::fromString(self::$faker->uuid),
+            new Username(self::$faker->userName),
+            new Email(self::$faker->email),
+            new Credentials([new Password(self::$faker->password, false)]),
             true,
-            new Name($this->faker->firstName, $this->faker->lastName)
+            new Name(self::$faker->firstName, self::$faker->lastName)
         );
     }
 
@@ -74,7 +74,7 @@ class AuthorizationTest extends WebTestCase
         $authorizationManager = $container->get(AuthorizationManager::class);
         self::assertInstanceOf(AuthorizationManager::class, $authorizationManager);
 
-        $result = $authorizationManager->signUp($this->currentUser);
+        $result = $authorizationManager->signUp(self::$currentUser);
         self::assertTrue($result);
     }
 
@@ -84,7 +84,7 @@ class AuthorizationTest extends WebTestCase
         $authorizationManager = $container->get(AuthorizationManager::class);
         self::assertInstanceOf(AuthorizationManager::class, $authorizationManager);
 
-        $id = $authorizationManager->getId($this->currentUser->getEmail());
+        $id = $authorizationManager->getId(self::$currentUser->getEmail());
 
         self::assertNotNull($id);
     }
@@ -95,7 +95,7 @@ class AuthorizationTest extends WebTestCase
         $authorizationManager = $container->get(AuthorizationManager::class);
         self::assertInstanceOf(AuthorizationManager::class, $authorizationManager);
 
-        $raw = $authorizationManager->getId($this->currentUser->getEmail());
+        $raw = $authorizationManager->getId(self::$currentUser->getEmail());
 
         $decoded = json_decode($raw, true);
         $authorizationManager->delete(Uuid4::fromString($decoded[0]['id']));
